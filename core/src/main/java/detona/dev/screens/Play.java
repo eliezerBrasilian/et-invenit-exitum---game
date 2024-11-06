@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import detona.dev.Main;
 import detona.dev.classes.Agent;
 import detona.dev.classes.Matriz;
+import detona.dev.classes.SearchType;
 import detona.dev.classes.State;
 
 public class Play implements Screen {
@@ -35,26 +36,27 @@ public class Play implements Screen {
 //    private static final int WINDOW_HEIGHT = 420;
     private static final int WINDOW_WIDTH = 1080;
     private static final int WINDOW_HEIGHT = 720;
+    private static final int LINE = 4;
+    private static final int COLUMN = 10;
 
     private Matriz matriz;
     private Agent agent;
     private float timer = 0f;
     private final float MOVE_INTERVAL = 0.1f;
     final float TITLE_SIZE = 1 / 16f;
-
+    private SearchType searchType;
     private Main game;
 
-    public Play(Main game){
+    public Play(Main game, SearchType searchType){
         this.game = game;
+        this.searchType = searchType;
         create();
     }
 
     public void create() {
         shapeRenderer = new ShapeRenderer();
 
-        int linhaDesejada = 4;
-        int colunaDesejada = 10;
-        agent = new Agent(new State(linhaDesejada,colunaDesejada));
+        agent = new Agent(new State(LINE,COLUMN));
         matriz = new Matriz(agent);
         agent.showSteps();
         // Carrega o mapa

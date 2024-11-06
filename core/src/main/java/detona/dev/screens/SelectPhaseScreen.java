@@ -15,70 +15,40 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import detona.dev.Main;
+import detona.dev.classes.CustomButton;
+import detona.dev.classes.SearchType;
+import detona.dev.utils.MusicPlayer;
 
 public class SelectPhaseScreen implements Screen {
     private SpriteBatch spriteBatch;
     private Texture bgTexture;
-    private Music menuMusic;
+    private MusicPlayer menuMusic;
     private Stage stage;
 
     public SelectPhaseScreen(Main game){
-
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
+        menuMusic = new MusicPlayer();
         spriteBatch = new SpriteBatch();
-
         bgTexture = new Texture("background.png");
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/impact_stone.otf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 45;
-        parameter.borderWidth = 1;
-        parameter.color = Color.YELLOW;
-        parameter.shadowOffsetX = 3;
-        parameter.shadowOffsetY = 3;
-        parameter.shadowColor = new Color(0, 0.5f, 0, 0.75f);
-
-        BitmapFont font24 = generator.generateFont(parameter); // font size 24 pixel
-
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("celest_prologue.mp3"));
-        menuMusic.setLooping(true);
-        menuMusic.play();
+        BitmapFont titleFont = getTitleFont();
 
         Table table = new Table();
         table.setFillParent(true);
-        table.center(); // Centraliza o conteúdo do Table
+        table.center();
 
-        // Carrega o Skin para os elementos de UI
         Skin mySkin = new Skin(Gdx.files.internal("uiskin.json"));
-
-        // Cria o título
-        Label title = new Label("Escolha um algoritmo", mySkin);
-        title.setColor(Color.WHITE);
-
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font24;
-
-        title.setStyle(labelStyle);
+        Label title = getStylishedLabel(mySkin, titleFont);
 
         //meus quadrados
-
         Button op1 = new TextButton("Busca em largura",mySkin);
         op1.setColor(Color.GRAY);
         Button op2 = new TextButton("Busca em profundidade", mySkin);
         op2.setColor(Color.GRAY);
 
-        //title.setFontScale(3); // Aumenta o tamanho da fonte do título
-
-        // Cria o botão
-        Button startButton = new TextButton("Começar", mySkin);
-        float r = 183 / 255f;
-        float g = 163 / 255f;
-        float b = 228 / 255f;
-        float a = 1f;
-        startButton.setColor(r,g,b,a);
-        startButton.setSize(150, 40);
+        CustomButton startButton = new CustomButton("Começar", mySkin);
 
         op1.addListener(new ClickListener(){
             @Override
@@ -100,15 +70,21 @@ public class SelectPhaseScreen implements Screen {
             }
         });
 
-        startButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                menuMusic.stop();
-                dispose();
-               game.setScreen(new Play(game));
+        startButton.onClick (()->{
+            menuMusic.stop();
+
+            if(op1.isChecked()){
+                game.setScreen(new Play(game, SearchType.QUEUE));
             }
+           else game.setScreen(new Play(game,SearchType.STACK));
         });
 
+        buildingUi(table, title, op1, op2, startButton);
+
+        stage.addActor(table);
+    }
+
+    private static void buildingUi(Table table, Label title, Button op1, Button op2, CustomButton startButton) {
         // Adiciona o título e o botão ao Table
         table.padTop(50);
         table.add(title)
@@ -121,18 +97,35 @@ public class SelectPhaseScreen implements Screen {
         table.add(op2).width(190).height(100);
         table.row();
 
-
         // Adiciona o botão Start centralizado
-        Container<Button> buttonContainer = new Container<>(startButton);
+        Container<Button> buttonContainer = new Container<>(startButton.get());
         buttonContainer.center();
         table.add(buttonContainer).colspan(3).padTop(20).center(); // Centraliza o botão com colspan de 3
+    }
 
+    private static Label getStylishedLabel(Skin mySkin, BitmapFont titleFont) {
+        Label title = new Label("Escolha um algoritmo", mySkin);
+        title.setColor(Color.WHITE);
 
-        //table.add(startButton).size(150, 40).padTop(40); // Adiciona o botão com tamanho específico
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = titleFont;
 
-        stage.addActor(table);
+        title.setStyle(labelStyle);
+        return title;
+    }
 
-        //table.setDebug(true);
+    private static BitmapFont getTitleFont() {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/impact_stone.otf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 45;
+        parameter.borderWidth = 1;
+        parameter.color = Color.YELLOW;
+        parameter.shadowOffsetX = 3;
+        parameter.shadowOffsetY = 3;
+        parameter.shadowColor = new Color(0, 0.5f, 0, 0.75f);
+
+        BitmapFont font24 = generator.generateFont(parameter); // font size 24 pixel
+        return font24;
     }
 
     @Override
