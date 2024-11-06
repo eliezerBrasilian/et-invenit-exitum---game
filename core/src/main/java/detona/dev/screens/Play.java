@@ -56,7 +56,7 @@ public class Play implements Screen {
     public void create() {
         shapeRenderer = new ShapeRenderer();
 
-        agent = new Agent(new State(LINE,COLUMN));
+        agent = new Agent(new State(LINE,COLUMN),searchType);
         matriz = new Matriz(agent);
         agent.showSteps();
         // Carrega o mapa
