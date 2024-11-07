@@ -11,6 +11,7 @@ public class Agent {
     public boolean hasWon = false;
     private SearchType searchType;
 
+
     public Agent(State newState,SearchType searchType){
         currentPositionState = newState;
         this.searchType = searchType;
@@ -155,4 +156,7 @@ public class Agent {
         System.out.println("Passos no total: " + steps);
     }
 
+    public int steps(){
+        return steps;
+    }
 }
